@@ -23,7 +23,7 @@ class VedicGoro:
         self.chrome_options = webdriver.ChromeOptions()
         self.BaseUrl = "https://vedic-horo.ru/analyse.php"
         self.basename = "cities15000"
-        self.filename = f"../data/{self.basename}.zip"
+        self.filename = f"./astrology/Bot/data/{self.basename}.zip"
         self.sign = ["Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог",
                      "Водолей", "Рыбы"]
         self.coordinates = {
