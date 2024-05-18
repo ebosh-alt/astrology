@@ -10,8 +10,10 @@ from PIL import Image, ImageDraw, ImageFont
 from aiogram.types import FSInputFile
 from geopy.geocoders import Nominatim
 from selenium import webdriver
+from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-
+from selenium.webdriver.chrome.service import Service
 from Bot.entity.NatalChart import ElementNatalChart
 from Bot.entity.models import Date
 
@@ -20,10 +22,12 @@ logger = logging.getLogger("__name__")
 
 class VedicGoro:
     def __init__(self):
-        self.chrome_options = webdriver.ChromeOptions()
+        self.chrome_options = webdriver.FirefoxOptions()
+        executable_path = "geckodriver"
+        self.service = Service(executable_path)
         self.BaseUrl = "https://vedic-horo.ru/analyse.php"
         self.basename = "cities15000"
-        self.filename = f"Bot/data/{self.basename}.zip"
+        self.filename = f"Bot/Data/{self.basename}.zip"
         self.sign = ["Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог",
                      "Водолей", "Рыбы"]
         self.coordinates = {
@@ -153,13 +157,14 @@ class VedicGoro:
 
     def __set_options(self, *args):
         for arg in args:
+            self.options = webdriver.FirefoxOptions()
             self.chrome_options.add_argument(arg)
         logger.info("Setting options")
 
     def __get_driver(self):
         self.__set_options("--headless", '--window-size=1920,1080', '--headless', '--disable-gpu')
         logger.info("Getting driver")
-        return webdriver.Chrome(options=self.chrome_options)
+        return webdriver.Firefox(service=self.service, options=self.options)
 
     async def __screen(self):
         bbox = (460, 120, 790, 440)
