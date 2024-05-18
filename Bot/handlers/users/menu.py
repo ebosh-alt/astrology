@@ -53,7 +53,7 @@ async def input_name(message: Message, state: FSMContext):
     try:
         data: dict = await state.get_data()
         person_data: PersonData = data["person_data"]
-        person_data.city = message.text
+        person_data.city = message.text.capitalize()
         await state.update_data(person_data=person_data)
         await state.set_state(state=UserStates.input_birth_data_natal)
         await bot.send_message(
