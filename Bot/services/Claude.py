@@ -25,4 +25,4 @@ class Claude:
                 {"role": "user", "content": get_mes("user_openai", question=question, natal_chart=natal_chart)}
             ]
         )
-        return message
+        return message.content
