@@ -12,7 +12,7 @@ from Bot.pkg.states import UserStates
 from Bot.services.Claude import Claude
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
-from Bot.services.vedic_horo import VedicGoro
+from Bot.services.vedic_horo_linux import VedicGoro
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -112,8 +112,10 @@ async def question_input(message: CallbackQuery, state: FSMContext):
     ai = Claude()
     natal_chart = horo.get_natal_chart(city=person_data.city, name=person_data.name, date=date)
     photo = horo.get_photo(natal_chart=natal_chart)
+    data = horo.get_info_city(city=person_data.city)
+
     await bot.send_photo(chat_id=message.from_user.id,
-                         caption="Ваша натальная карта",
+                         caption=f"Ваша натальная карта\n{data}",
                          photo=photo)
     answer = ai.get_answer(question=question, natal_chart=natal_chart)
     await bot.send_message(chat_id=message.from_user.id,

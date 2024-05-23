@@ -10,10 +10,8 @@ from PIL import Image, ImageDraw, ImageFont
 from aiogram.types import FSInputFile
 from geopy.geocoders import Nominatim
 from selenium import webdriver
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
+
 from Bot.entity.NatalChart import ElementNatalChart
 from Bot.entity.models import Date
 
@@ -22,9 +20,7 @@ logger = logging.getLogger("__name__")
 
 class VedicGoro:
     def __init__(self):
-        self.chrome_options = webdriver.FirefoxOptions()
-        executable_path = "geckodriver"
-        self.service = Service(executable_path)
+        self.chrome_options = webdriver.ChromeOptions()
         self.BaseUrl = "https://vedic-horo.ru/analyse.php"
         self.basename = "cities15000"
         self.filename = f"Bot/Data/{self.basename}.zip"
@@ -43,7 +39,7 @@ class VedicGoro:
             10: {"sign": (315, 290), "planet": (460, 290)},
             11: {"sign": (465, 140), "planet": (545, 140)},
             12: {"sign": (441.5, 120), "planet": (460, 35)}}
-        self.path_font = './Sonic.ttf'
+        self.path_font = 'Bot/Data/Sonic.ttf'
         self.planets_eng = {
             "Асцендент": "As",
             "Солнце": "Su",
@@ -61,11 +57,11 @@ class VedicGoro:
         im = self.__get_background()
         draw = ImageDraw.Draw(im)
         self.__drawing_signs(draw, natal_chart)
-        im.save(".png")
-        return FSInputFile(".png")
+        im.save("photo.png")
+        return FSInputFile("photo.png")
 
     def get_natal_chart(self, city: str, name: str, date: Date) -> list[ElementNatalChart]:
-        lat, lon, utc = self.__get_info_city(city)
+        utc, lat, lon = self.__get_info_city(city)
         url = f"{self.BaseUrl}?name={name}&date={date.day}.{date.month}.{date.year}&time={date.hour}:{date.minute}:00&" \
               f"latitude={lat}&longitude={lon}&timezone={utc}"
         natal_chart: list[ElementNatalChart] = self.create_natal_chart(url)
@@ -147,24 +143,22 @@ class VedicGoro:
                             if ct:
                                 city2tz[ct].add(timezone)
         for tzname in city2tz[city]:
-            if "Europe" in tzname:
-                geolocator = Nominatim(user_agent="amvl;emvl;wvml;wmevl;mevl;m")
-                location = geolocator.geocode("Moscow")
-                lat, lon = float("%.2f" % location.latitude), float("%.2f" % location.longitude)
-                now = datetime.now(pytz.timezone(tzname))
-                return now.strftime("%z").replace("0", ""), lat, lon
+            geolocator = Nominatim(user_agent="amvl;emvl;wvml;wmevl;mevl;m")
+            location = geolocator.geocode(tzname.split("/")[1])
+            lat, lon = float("%.2f" % location.latitude), float("%.2f" % location.longitude)
+            now = datetime.now(pytz.timezone(tzname))
+            return now.strftime("%z").replace("0", ""), lat, lon
         return "+3", 55.63, 37.61
 
     def __set_options(self, *args):
         for arg in args:
-            self.options = webdriver.FirefoxOptions()
             self.chrome_options.add_argument(arg)
         logger.info("Setting options")
 
     def __get_driver(self):
         self.__set_options("--headless", '--window-size=1920,1080', '--headless', '--disable-gpu')
         logger.info("Getting driver")
-        return webdriver.Firefox(service=self.service, options=self.options)
+        return webdriver.Chrome(options=self.chrome_options)
 
     async def __screen(self):
         bbox = (460, 120, 790, 440)
@@ -197,4 +191,6 @@ if __name__ == "__main__":
         filemode="w",
         encoding='utf-8')
     client = VedicGoro()
-    client.get_photo(natal_chart=[])
+    natal_chart = client.get_natal_chart(city="Стерлитамак", name="Артем",
+                                         date=Date(year="1997", month="11", day="22", hour="16", minute="48"))
+    client.get_photo(natal_chart=natal_chart)

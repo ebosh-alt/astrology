@@ -15,7 +15,7 @@ class Claude:
         self.temperature = 0.5
         self.id = "fc7305ab-231a-4586-bab1-6a035fa16bc9"
 
-    async def get_answer(self, question, natal_chart):
+    def get_answer(self, question, natal_chart):
         message = self.client.messages.create(
             model=self.model,
             max_tokens=1000,
@@ -25,4 +25,4 @@ class Claude:
                 {"role": "user", "content": get_mes("user_openai", question=question, natal_chart=natal_chart)}
             ]
         )
-        return message.content
+        return message.content[0].text
