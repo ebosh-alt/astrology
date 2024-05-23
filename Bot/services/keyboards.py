@@ -84,4 +84,6 @@ class Keyboards:
         "6": "Какое время для меня самое благоприятное для зачатия и рождения детей?"}
 
     question_kb = Builder.create_keyboard(["1", "2", "3", "4", "5", "6"], 2, 2, 2)
+
+    ask_question_kb = Builder.create_keyboard
 #
