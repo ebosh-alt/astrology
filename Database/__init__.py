@@ -18,5 +18,8 @@
 # templates: Templates = Templates()
 # workers: Workers = Workers()
 
-# __al__ = ("Account", "accounts", "Customer", "customers", "Manager", "managers", "Project", "projects", "projects_work",
-#           "ProjectWork", "responses_info", "ResponseInfo", "templates", "Template", "Worker", "workers")
+from .questionnaires import Questionnaire, Questionnaires
+
+questionnaires: Questionnaires = Questionnaires()
+
+__al__ = ("questionnaires", "Questionnaire")
