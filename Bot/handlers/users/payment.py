@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 PRICES = [LabeledPrice(label="Ответ на вопрос", amount=10000)]
 
 
-@router.message(Command("pay"))
+@router.message(F.data == "")
 async def start(message: Message | CallbackQuery, state: FSMContext):
     id = message.from_user.id
     await bot.send_invoice(chat_id=id,
