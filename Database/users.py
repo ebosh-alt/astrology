@@ -6,20 +6,14 @@ logger = logging.getLogger(__name__)
 
 
 class User(Base):
-    __tablename__ = "admins_chats"
+    __tablename__ = "users"
 
-    id: int = Column(Integer, autoincrement="auto", primary_key=True)
-    user_id: int = Column(BigInteger)
-    name: str = Column(String)
-    city: str = Column(String)
-    birth_data: str = Column(String)
+    id: int = Column(BigInteger, primary_key=True)
+    username: str = Column(String)
 
     def dict(self):
         return {"id": self.id,
-                "user_id": self.user_id,
-                "name": self.name,
-                "city": self.city,
-                "birth_data": self.birth_data
+                "username": self.username,
                 }
 
 
