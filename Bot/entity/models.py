@@ -1,3 +1,5 @@
+from typing import NamedTuple
+
 from pydantic import BaseModel
 
 
@@ -7,6 +9,5 @@ class Date(BaseModel):
     day: str
     hour: str
     minute: str
-
 
 
