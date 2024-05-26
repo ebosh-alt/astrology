@@ -123,3 +123,46 @@ class Keyboards:
         else:
             buttons[f"Обучающие статьи {turned}"] = f"Обучающие статьи"
         return Builder.create_keyboard(buttons)
+
+    ask_question_kb = Builder.create_keyboard(
+        {
+            "Бесплатно": "ask_question_free",
+            "💳590р 7 дней": "ask_question_590",
+            "💳1000р 1 день": "ask_question_1000",
+        }
+    )
+    
+    ask_paid_question_kb = Builder.create_keyboard(
+        {
+            "Задать платный вопрос": "get_paid_kb"
+        }
+    )
+    
+    choose_paid_question_kb = Builder.create_keyboard(
+        {
+            "💳590р 7 дней": "ask_question_590",
+            "💳1000р 1 день": "ask_question_1000",
+        }
+    )
+
+    rectification_time_buts = {
+        "45": "2500",
+        "2": "3500",
+        "unknown": "5000",
+    }
+    rectification_choose_time = Builder.create_keyboard(
+        {
+            "Время известно в промежутке 45 мин": "rectification_time_45",
+            "Время известно в промежутке 2 часов": "rectification_time_2",
+            "Время рождения неизвестно или >2 ч.": "rectification_time_unknown",
+        }
+    )
+
+    @staticmethod
+    def pay_natal_keyboard(question_status: str):
+        if question_status == "free":
+            return None
+        return Builder.create_keyboard(
+            [f"💳{question_status}р по карте", f"💳{question_status}р PayPal"] 
+        )
+#
