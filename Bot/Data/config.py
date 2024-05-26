@@ -8,5 +8,5 @@ bot_token = env('BOT_TOKEN')
 dp = Dispatcher()
 bot = Bot(bot_token)
 link_to_bot = "https://t.me/manager_example_bot"
-openai_key = env("ANTHROPIC_API_KEY")
+# openai_key = env("ANTHROPIC_API_KEY")
 
