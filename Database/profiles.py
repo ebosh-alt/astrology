@@ -14,6 +14,7 @@ class Profile(Base):
     country: str = Column(String)
     city: str = Column(String)
     birth_data: str = Column(String)
+    birth_time: str = Column(String)
 
     def dict(self):
         return {"id": self.id,
@@ -26,7 +27,7 @@ class Profile(Base):
 
 class Profiles(BaseDB):
     async def new(self, profile: Profile):
-        await self._add_obj(Profile)
+        await self._add_obj(profile)
 
     async def get(self, id: int) -> Profile | None:
         result = await self._get_object(Profile, id)

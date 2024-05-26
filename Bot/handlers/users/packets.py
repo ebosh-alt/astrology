@@ -15,7 +15,7 @@ router = Router()
 logger = logging.getLogger(__name__)
 
 
-@router.callback_query(F.data.in_(Keyboards.menu_bt.values()))
+@router.callback_query(F.data.in_(list(Keyboards.menu_bt.values())[2:]))
 async def func(message: CallbackQuery, state: FSMContext):
     id = message.from_user.id
     await state.set_state()

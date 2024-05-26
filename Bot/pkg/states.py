@@ -2,6 +2,9 @@ from aiogram.fsm.state import StatesGroup, State
 
 
 class UserStates(StatesGroup):
+    questionnare_setted = State()
+    choose_questionnare = State()
+
     choose_question_status = State()
     input_question_1_natal = State()
     input_question_2_natal = State()

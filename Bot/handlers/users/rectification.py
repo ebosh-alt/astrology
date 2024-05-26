@@ -13,7 +13,7 @@ from Bot.services.Claude import Claude
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
 from Bot.services.vedic_horo_linux import VedicGoro
-from Database import questionnaires, Questionnaire
+
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -367,7 +367,7 @@ async def rect_input_video_link(message: CallbackQuery, state: FSMContext):
     await bot.send_message(
         chat_id=message.from_user.id,
         text=get_mes("rectification_24", rect_data=rect_data),
-        reply_markup=None,
+        reply_markup=Keyboards.pay_keyboard(question_status=rect_data.status),
         parse_mode=None
     )
     await state.clear()

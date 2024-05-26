@@ -52,7 +52,7 @@ async def input_date(message: Message, state: FSMContext):
         b_day = b_data[0]
         b_month = b_data[1]
         b_year = b_data[2].split(" ")[0]
-        person_data.date = message.text
+        person_data.birth_data = message.text
         await state.set_state(state=UserStates.input_time)
         await state.update_data(person_data=person_data)
         await bot.send_message(chat_id=message.from_user.id,
@@ -74,7 +74,7 @@ async def input_time(message: Message, state: FSMContext):
         b_data = message.text.split(":")
         b_hours = b_data[0]
         b_minutes = b_data[1]
-        person_data.time = message.text
+        person_data.birth_time = message.text
         await state.set_state(state=UserStates.input_country)
         await state.update_data(person_data=person_data)
         await bot.send_message(chat_id=message.from_user.id,
@@ -113,14 +113,14 @@ async def input_name(message: Message, state: FSMContext):
     await state.update_data(person_data=person_data)
     await bot.send_message(
         chat_id=id,
-        text=get_mes("view_profile", name=person_data.name, date=person_data.date, time=person_data.time,
+        text=get_mes("view_profile", name=person_data.name, date=person_data.birth_data, time=person_data.birth_time,
                      country=person_data.country, city=person_data.city, theme=theme),
     )
     profile = Profile(
         user_id=id,
         name=person_data.name,
-        date=person_data.date,
-        time=person_data.time,
+        birth_data=person_data.birth_data,
+        birth_time=person_data.birth_time,
         country=person_data.country,
         city=person_data.city,
     )

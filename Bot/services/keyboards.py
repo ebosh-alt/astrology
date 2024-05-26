@@ -7,6 +7,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
 from Bot.Data.config import LINK_SUPPORT
 from Bot.entity.StateModels import MailingData
+from Database import Profile, profiles
 
 logger = logging.getLogger(__name__)
 
@@ -132,18 +133,6 @@ class Keyboards:
         }
     )
     
-    ask_paid_question_kb = Builder.create_keyboard(
-        {
-            "Задать платный вопрос": "get_paid_kb"
-        }
-    )
-    
-    choose_paid_question_kb = Builder.create_keyboard(
-        {
-            "💳590р 7 дней": "ask_question_590",
-            "💳1000р 1 день": "ask_question_1000",
-        }
-    )
 
     rectification_time_buts = {
         "45": "2500",
@@ -159,10 +148,20 @@ class Keyboards:
     )
 
     @staticmethod
-    def pay_natal_keyboard(question_status: str):
+    def pay_keyboard(question_status: str):
         if question_status == "free":
             return None
         return Builder.create_keyboard(
             [f"💳{question_status}р по карте", f"💳{question_status}р PayPal"] 
         )
-#
+
+    @staticmethod
+    async def get_profiles_kb(user_id: int):
+        pr_list = await profiles.get_by_user(user_id=user_id)
+        kb_profiles_dict = {}
+        for pr in pr_list:
+            kb_profiles_dict[f"{pr.name} {pr.birth_data}"] = f"questionnare_{pr.id}"
+        kb_profiles_dict["Новая анкета"] = "questionnare_new"
+        return Builder.create_keyboard(kb_profiles_dict)
+    
+    questionnare_setted_kb = Builder.create_keyboard(["Продолжить"])
