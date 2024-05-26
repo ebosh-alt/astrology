@@ -11,6 +11,7 @@ class Profile(Base):
     id: int = Column(Integer, autoincrement="auto", primary_key=True)
     user_id: int = Column(BigInteger)
     name: str = Column(String)
+    country: str = Column(String)
     city: str = Column(String)
     birth_data: str = Column(String)
 

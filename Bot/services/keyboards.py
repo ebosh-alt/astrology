@@ -63,7 +63,7 @@ class Keyboards:
                "Ректификация (уточнить время рождения)": "rectification",
                "Брак и личная жизнь": "marriage",
                "Финансовая судьба": "financial_fate",
-               "Кармическаие задачи": "karmic_tasks",
+               "Кармические задачи": "karmic_tasks",
                "Талисманы и цифры": "talismans",
                "Здоровье": "health",
                "Жильё": "housing",
@@ -91,7 +91,7 @@ class Keyboards:
         "6": "Какое время для меня самое благоприятное для зачатия и рождения детей?"}
 
     question_kb = Builder.create_keyboard(["1", "2", "3", "4", "5", "6"], 2, 2, 2)
-    payment_kb = Builder.create_keyboard({"Заполнить анкету и оплатить 970 руб": "payment"})
+    payment_kb = Builder.create_keyboard({"Заполнить анкету и оплатить 970 руб": "filing_profile"})
     support_kb = Builder.create_keyboard({"Перейти в чат поддержки": LINK_SUPPORT})
 
     mailing_button = ["Онлайн эфир", "Гороскоп на неделю", "Видео от астролога", "Обучающие статьи"]

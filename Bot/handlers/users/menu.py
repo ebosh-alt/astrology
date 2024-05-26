@@ -13,7 +13,8 @@ from Bot.services.Claude import Claude
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
 from Bot.services.vedic_horo_linux import VedicGoro
-from Database import questionnaires, Questionnaire
+
+# from Database import questionnaires, Questionnaire
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -21,7 +22,12 @@ logger = logging.getLogger(__name__)
 
 @router.message(Command("start"))
 async def start(message: Message | CallbackQuery, state: FSMContext):
-    await state.clear()
+    # await state.clear()
+    id = message.from_user.id
+    data = await state.get_data()
+    if data.get("mailing") is None:
+        await state.set_state()
+        await state.update_data(mailing=MailingData())
     await bot.send_message(chat_id=id,
                            text=get_mes("start_menu_1"),
                            reply_markup=Keyboards.reply_menu_kb,
@@ -39,8 +45,6 @@ async def question(message: Message | CallbackQuery, state: FSMContext):
     if data.get("mailing") is None:
         await state.set_state()
         await state.update_data(mailing=MailingData())
-    # await state.update_data(person_data=PersonData())
-    # await state.set_state(state=UserStates.input_name_natal)
     await bot.send_message(chat_id=id,
                            text="Введите имя",
                            reply_markup=Keyboards.reply_menu_kb)
@@ -140,19 +144,19 @@ async def input_name(message: Message, state: FSMContext):
 #     await state.clear()
 
 
-@router.callback_query(F.data in ["1", "2", "3", "4", "5", "6"])
+@router.callback_query(F.data.in_(["1", "2", "3", "4", "5", "6"]))
 async def question_input(message: CallbackQuery, state: FSMContext):
     data: dict = await state.get_data()
     person_data: PersonData = data["person_data"]
 
-    questionnaire = Questionnaire(
-        user_id=message.from_user.id,
-        name=person_data.name,
-        city=person_data.city,
-        birth_data=person_data.birth_data
-    )
-
-    await questionnaires.new(obj=questionnaire)
+    # questionnaire = Questionnaire(
+    #     user_id=message.from_user.id,
+    #     name=person_data.name,
+    #     city=person_data.city,
+    #     birth_data=person_data.birth_data
+    # )
+    #
+    # await questionnaires.new(obj=questionnaire)
 
     await bot.send_message(chat_id=message.from_user.id,
                            text="Ваш вопрос принят")

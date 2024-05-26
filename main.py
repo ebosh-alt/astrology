@@ -5,11 +5,13 @@ from contextlib import suppress
 from Bot.Data.config import dp, bot
 from Bot.handlers import routers
 from Bot.services import middleware
+from Database.base import create_async_database
 
 logger = logging.getLogger(__name__)
 
 
 async def main():
+    await create_async_database()
     for router in routers:
         dp.include_router(router)
     dp.update.middleware(middleware.Logging())
