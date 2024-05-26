@@ -4,11 +4,8 @@ from pydantic import BaseModel
 class PersonData(BaseModel):
     name: str = None
     country: str = None
-    date: str = None
-    time: str = None
-    country: str = None
     city: str = None
-    theme: str = None
+    birth_data: str = None
     birth_time: str = None
     question: str = None
     question_2: str = None
