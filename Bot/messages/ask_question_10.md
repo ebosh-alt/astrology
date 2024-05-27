@@ -1,8 +1,8 @@
 🧍  Имя: {{person_data.name}}
 
-📅  Дата рождения: {{person_data.date}}
+📅  Дата рождения: {{person_data.birth_data}}
 
-🕐  Время рождения: {{person_data.time}}
+🕐  Время рождения: {{person_data.birth_time}}
 
 🌍  Страна, Город: {{person_data.country}}, {{person_data.city}}
 
