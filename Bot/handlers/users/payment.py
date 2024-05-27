@@ -13,7 +13,7 @@ from Bot.pkg.states import UserStates
 from Bot.services.Claude import Claude
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
-from Bot.services.vedic_horo_linux import VedicGoro
+from Bot.services.vedic_goro_linux import VedicGoro
 
 router = Router()
 logger = logging.getLogger(__name__)

@@ -9,8 +9,9 @@ import pytz
 from PIL import Image, ImageDraw, ImageFont
 from aiogram.types import FSInputFile
 from geopy.geocoders import Nominatim
-from selenium import webdriver
+# from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium import webdriver
 
 from Bot.entity.NatalChart import ElementNatalChart
 from Bot.entity.models import Date
@@ -162,7 +163,7 @@ class VedicGoro:
     def __get_driver(self):
         self.__set_options("--headless", '--window-size=1920,1080', '--disable-gpu')
         logger.info("Getting driver")
-        return webdriver.Chrome(options=self.chrome_options)
+        return webdriver.Chrome("Bot/Data/chromedriver")
 
     async def __screen(self):
         bbox = (460, 120, 790, 440)

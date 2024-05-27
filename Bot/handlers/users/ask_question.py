@@ -12,7 +12,7 @@ from Bot.pkg.states import UserStates
 from Bot.services.Claude import Claude
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
-from Bot.services.vedic_horo import VedicGoro
+from Bot.services.vedic_goro_linux import VedicGoro
 from Database import profiles, Profile
 
 router = Router()
@@ -257,60 +257,57 @@ async def input_city(message: CallbackQuery, state: FSMContext):
         )
         await profiles.new(profile=pr)
     except Exception as er:
-        await bot.send_message(
-            chat_id=message.from_user.id,
-            text=f"Ошибка!\nВведите имя{er}",
-            reply_markup=None
-        )
+        logger.info(er)
+        # await bot.send_message(
+        #     chat_id=message.from_user.id,
+        #     text=f"Ошибка!\nВведите имя{er}",
+        #     reply_markup=None
+        # )
     await state.clear()
 
 
 @router.callback_query(UserStates.questionnare_setted)
 async def questionnare_setted(message: CallbackQuery, state: FSMContext):
-    data: dict = await state.get_data()
-    person_data: PersonData = data["person_data"]
-    await bot.send_message(
-        chat_id=message.from_user.id,
-        text=get_mes("ask_question_9"),
-    )
-    # await bot.send_message(
-    #     chat_id=message.from_user.id,
-    #     text=f"name = {person_data.name}, country = {person_data.country}, city = {person_data.city}, birth_data = {person_data.birth_data}, birth_time = {person_data.birth_time}, question = {person_data.question}, question_2 = {person_data.question_2}, question_status = {person_data.question_status}"
-    # )
-    keyboard = Keyboards.pay_keyboard(person_data.question_status)
-    await bot.send_message(
-        chat_id=message.from_user.id,
-        text=get_mes("ask_question_10", person_data=person_data),
-        reply_markup=keyboard
-    )
-    if person_data.question_status == "free":
-        b_data = person_data.birth_data
-        b_day = b_data.split(".")[0]
-        b_month = b_data.split(".")[1]
-        b_year = b_data.split(".")[2]
-        b_time = person_data.birth_time
-        b_hours = b_time.split(":")[0]
-        b_minutes = b_time.split(":")[1]
-        date = Date(year=b_year,
-                    month=b_month,
-                    day=b_day,
-                    hour=b_hours,
-                    minute=b_minutes)
-        horo = VedicGoro()
-        ai = Claude()
-        natal_chart = horo.get_natal_chart(city=person_data.city, name=person_data.name, date=date)
-        photo = horo.get_photo(natal_chart=natal_chart)
-        # data = horo.get_info_city(city=person_data.city)
+    try:
+        data: dict = await state.get_data()
+        person_data: PersonData = data["person_data"]
+        await bot.send_message(
+            chat_id=message.from_user.id,
+            text=get_mes("ask_question_9"),
+        )
+        keyboard = Keyboards.pay_keyboard(person_data.question_status)
+        await bot.send_message(
+            chat_id=message.from_user.id,
+            text=get_mes("ask_question_10", person_data=person_data),
+            reply_markup=keyboard
+        )
+        if person_data.question_status == "free":
+            b_data = person_data.birth_data
+            b_day = b_data.split(".")[0]
+            b_month = b_data.split(".")[1]
+            b_year = b_data.split(".")[2]
+            b_time = person_data.birth_time
+            b_hours = b_time.split(":")[0]
+            b_minutes = b_time.split(":")[1]
+            date = Date(year=b_year,
+                        month=b_month,
+                        day=b_day,
+                        hour=b_hours,
+                        minute=b_minutes)
+            horo = VedicGoro()
+            ai = Claude()
+            natal_chart = horo.get_natal_chart(city=person_data.city, name=person_data.name, date=date)
+            photo = horo.get_photo(natal_chart=natal_chart)
+            # data = horo.get_info_city(city=person_data.city)
 
-        await bot.send_photo(chat_id=message.from_user.id,
-                             caption=f"Ваша натальная карта",
-                             photo=photo)
-        # answer = ai.get_answer(question=person_data.question, natal_chart=natal_chart)
-        # await bot.send_message(chat_id=message.from_user.id,
-        #                        text=answer)
-
+            await bot.send_photo(chat_id=message.from_user.id,
+                                 caption=f"Ваша натальная карта",
+                                 photo=photo)
+            # answer = ai.get_answer(question=person_data.question, natal_chart=natal_chart)
+            # await bot.send_message(chat_id=message.from_user.id,
+            #                        text=answer)
+    except Exception as er:
+        logger.info(er)
     await state.clear()
-
-
 
 question_rt = router
