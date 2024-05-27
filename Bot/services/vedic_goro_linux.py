@@ -4,13 +4,12 @@ from collections import defaultdict
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
-
 import pytz
 from PIL import Image, ImageDraw, ImageFont
 from aiogram.types import FSInputFile
 from geopy.geocoders import Nominatim
-# from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 
 from Bot.entity.NatalChart import ElementNatalChart
@@ -21,7 +20,8 @@ logger = logging.getLogger("__name__")
 
 class VedicGoro:
     def __init__(self):
-        self.chrome_options = webdriver.ChromeOptions()
+        self.options = webdriver.FirefoxOptions()
+        self.service = Service("/root/.wdm/drivers/geckodriver/linux64/v0.34.0/geckodriver")
         self.BaseUrl = "https://vedic-horo.ru/analyse.php"
         self.basename = "cities15000"
         self.filename = f"Bot/Data/{self.basename}.zip"
@@ -120,7 +120,8 @@ class VedicGoro:
     def __get_html_natal_chert(self, url):
         driver = self.__get_driver()
         driver.get(url)
-        time.sleep(2)
+
+        # time.sleep(2)
         el = driver.find_element(By.CLASS_NAME, "planets-info")
         logger.info("Received html natal chart")
         return el.text.split("\n")
@@ -157,13 +158,13 @@ class VedicGoro:
 
     def __set_options(self, *args):
         for arg in args:
-            self.chrome_options.add_argument(arg)
+            self.options.add_argument(arg)
         logger.info("Setting options")
 
     def __get_driver(self):
-        self.__set_options("--headless", '--window-size=1920,1080', '--disable-gpu')
+        self.__set_options("--headless", '--window-size=1920,1080')
         logger.info("Getting driver")
-        return webdriver.Chrome("Bot/Data/chromedriver")
+        return webdriver.Firefox(service=self.service, options=self.options)
 
     async def __screen(self):
         bbox = (460, 120, 790, 440)
@@ -187,15 +188,3 @@ class VedicGoro:
     async def __get_natal_chert(self):
         await self.__screen()
 
-
-if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        # filename="log.logging",
-        format=u'%(filename)s:%(lineno)d #%(levelname)-3s [%(asctime)s] - %(message)s',
-        filemode="w",
-        encoding='utf-8')
-    client = VedicGoro()
-    natal_chart = client.get_natal_chart(city="Стерлитамак", name="Артем",
-                                         date=Date(year="1997", month="11", day="22", hour="16", minute="48"))
-    client.get_photo(natal_chart=natal_chart)
