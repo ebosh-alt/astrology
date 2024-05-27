@@ -2,12 +2,9 @@ import logging
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
-from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-from Bot.Data.config import bot, STRIPE_API_KEY
-from Bot.handlers.users.payment import PRICES
+from Bot.Data.config import bot
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
 

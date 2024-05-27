@@ -156,7 +156,7 @@ class VedicGoro:
         logger.info("Setting options")
 
     def __get_driver(self):
-        self.__set_options("--headless", '--window-size=1920,1080', '--headless', '--disable-gpu')
+        self.__set_options("--headless", '--window-size=1920,1080', '--disable-gpu')
         logger.info("Getting driver")
         return webdriver.Chrome(options=self.chrome_options)
 

@@ -21,7 +21,8 @@ async def func(message: CallbackQuery, state: FSMContext):
     await state.set_state()
     for name in Keyboards.menu_bt:
         if Keyboards.menu_bt[name] == message.data:
-            await state.update_data(profile=PersonData(theme=name))
+            logger.info(f"theme: {name}")
+            await state.update_data(profile=PersonData(thema=name))
             break
 
     await bot.send_message(chat_id=id,

@@ -12,7 +12,7 @@ from Bot.pkg.states import UserStates
 from Bot.services.Claude import Claude
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
-from Bot.services.vedic_horo_linux import VedicGoro
+from Bot.services.vedic_goro_windows import VedicGoro
 from Database import profiles, Profile
 
 router = Router()
@@ -26,7 +26,7 @@ async def ask_question(message: CallbackQuery, state: FSMContext):
     await bot.send_message(chat_id=message.from_user.id,
                            text=get_mes("ask_question_text"),
                            reply_markup=Keyboards.ask_question_kb,
-                           parse_mode=None)    
+                           parse_mode=None)
 
 
 @router.callback_query((UserStates.choose_question_status))
@@ -35,12 +35,13 @@ async def ask_question_1(message: CallbackQuery, state: FSMContext):
     await state.set_state(UserStates.input_question_1_natal)
     await state.update_data(person_data=PersonData(question_status=question_status))
     await bot.send_message(chat_id=message.from_user.id,
-                        text=get_mes("ask_question_1"),
-                        reply_markup=Keyboards.question_kb,
-                        parse_mode=None) 
+                           text=get_mes("ask_question_1"),
+                           reply_markup=Keyboards.question_kb,
+                           parse_mode=None)
     # if question_status == "free":
     # elif question_status == "590":
     # elif question_status == "1000":
+
 
 @router.callback_query((UserStates.choose_questionnare))
 async def choose_questionnare(message: CallbackQuery, state: FSMContext):
@@ -48,35 +49,35 @@ async def choose_questionnare(message: CallbackQuery, state: FSMContext):
     if questionnare_id == "new":
         await state.set_state(UserStates.input_name_natal)
         await bot.send_message(chat_id=message.from_user.id,
-                            text=get_mes("ask_question_3"),
-                            parse_mode=None)
+                               text=get_mes("ask_question_3"),
+                               parse_mode=None)
         await bot.send_message(chat_id=message.from_user.id,
-                            text=get_mes("ask_question_4"),
-                            parse_mode=None)
+                               text=get_mes("ask_question_4"),
+                               parse_mode=None)
     else:
         await state.set_state(UserStates.questionnare_setted)
         pr = await profiles.get(id=int(questionnare_id))
-        print(pr.dict())
+        logger.info(pr.dict())
         data: dict = await state.get_data()
         person_data_old: PersonData = data["person_data"]
-        person_data = PersonData(name=pr.name, 
-                                 country=pr.country, 
-                                 city=pr.city, 
-                                 birth_data=pr.birth_data, 
+        person_data = PersonData(name=pr.name,
+                                 country=pr.country,
+                                 city=pr.city,
+                                 birth_data=pr.birth_data,
                                  birth_time=pr.birth_time,
-        )
+                                 )
 
-        person_data.question_status=person_data_old.question_status
-        person_data.question=person_data_old.question
-        person_data.question_2=person_data_old.question_2
-        person_data.thema=person_data_old.thema
+        person_data.question_status = person_data_old.question_status
+        person_data.question = person_data_old.question
+        person_data.question_2 = person_data_old.question_2
+        person_data.thema = person_data_old.thema
 
         await state.update_data(person_data=person_data)
         await bot.send_message(chat_id=message.from_user.id,
-                                text="Анкета выбрана",
-                                reply_markup=Keyboards.questionnare_setted_kb,
-                                parse_mode=None) 
-    # if question_status == "free":
+                               text="Анкета выбрана",
+                               reply_markup=Keyboards.questionnare_setted_kb,
+                               parse_mode=None)
+        # if question_status == "free":
     # elif question_status == "590":
     # elif question_status == "1000":
 
@@ -90,22 +91,21 @@ async def choose_question(message: CallbackQuery, state: FSMContext):
     if person_data.question_status == "free" or person_data.question is None:
         await state.set_state(UserStates.choose_questionnare)
         await bot.send_message(chat_id=message.from_user.id,
-                            text=get_mes("ask_question_2", question=person_data.question),
-                            parse_mode=None)
+                               text=get_mes("ask_question_2", question=person_data.question),
+                               parse_mode=None)
         await bot.send_message(
             chat_id=message.from_user.id,
             text="Выберите анкету или заполните новую:",
             reply_markup=await Keyboards.get_profiles_kb(user_id=message.from_user.id),
             parse_mode=None
         )
-        
+
     else:
         await state.set_state(UserStates.input_question_2_natal)
         await bot.send_message(chat_id=message.from_user.id,
-                        text=get_mes("ask_question_13"),
-                        reply_markup=Keyboards.question_kb,
-                        parse_mode=None) 
-    
+                               text=get_mes("ask_question_13"),
+                               reply_markup=Keyboards.question_kb,
+                               parse_mode=None)
 
 
 @router.callback_query(UserStates.input_question_2_natal)
@@ -115,8 +115,9 @@ async def choose_2_question(message: CallbackQuery, state: FSMContext):
     person_data.question_2 = Keyboards.question_button[message.data]
     await state.set_state(UserStates.choose_questionnare)
     await bot.send_message(chat_id=message.from_user.id,
-                        text=get_mes("ask_question_12", question_1=person_data.question, question_2=person_data.question_2),
-                        parse_mode=None)
+                           text=get_mes("ask_question_12", question_1=person_data.question,
+                                        question_2=person_data.question_2),
+                           parse_mode=None)
     await bot.send_message(
         chat_id=message.from_user.id,
         text="Выберите анкету или заполните новую:",
@@ -211,11 +212,11 @@ async def input_city(message: CallbackQuery, state: FSMContext):
             chat_id=message.from_user.id,
             text=get_mes("ask_question_9"),
         )
-        await bot.send_message(
-            chat_id=message.from_user.id,
-            text=f"name = {person_data.name}, country = {person_data.country}, city = {person_data.city}, birth_data = {person_data.birth_data}, birth_time = {person_data.birth_time}, question = {person_data.question}, question_2 = {person_data.question_2}, question_status = {person_data.question_status}"
-        )
-        keyboard=Keyboards.pay_keyboard(person_data.question_status)
+        # await bot.send_message(
+        #     chat_id=message.from_user.id,
+        #     text=f"name = {person_data.name}, country = {person_data.country}, city = {person_data.city}, birth_data = {person_data.birth_data}, birth_time = {person_data.birth_time}, question = {person_data.question}, question_2 = {person_data.question_2}, question_status = {person_data.question_status}"
+        # )
+        keyboard = Keyboards.pay_keyboard(person_data.question_status)
         await bot.send_message(
             chat_id=message.from_user.id,
             text=get_mes("ask_question_10", person_data=person_data),
@@ -238,22 +239,21 @@ async def input_city(message: CallbackQuery, state: FSMContext):
             ai = Claude()
             natal_chart = horo.get_natal_chart(city=person_data.city, name=person_data.name, date=date)
             photo = horo.get_photo(natal_chart=natal_chart)
-            data = horo.get_info_city(city=person_data.city)
 
             await bot.send_photo(chat_id=message.from_user.id,
-                                 caption=f"Ваша натальная карта\n{data}",
+                                 caption=f"Ваша натальная карта",
                                  photo=photo)
-            answer = ai.get_answer(question=person_data.question, natal_chart=natal_chart)
-            await bot.send_message(chat_id=message.from_user.id,
-                                   text=answer)
-    
+            # answer = ai.get_answer(question=person_data.question, natal_chart=natal_chart)
+            # await bot.send_message(chat_id=message.from_user.id,
+            #                        text=answer)
+
         pr = Profile(
-            user_id = message.from_user.id,
-            name = person_data.name,
-            country = person_data.country,
-            city = person_data.city,
-            birth_data = person_data.birth_data,
-            birth_time = person_data.birth_time,
+            user_id=message.from_user.id,
+            name=person_data.name,
+            country=person_data.country,
+            city=person_data.city,
+            birth_data=person_data.birth_data,
+            birth_time=person_data.birth_time,
         )
         await profiles.new(profile=pr)
     except Exception as er:
@@ -274,11 +274,11 @@ async def questionnare_setted(message: CallbackQuery, state: FSMContext):
             chat_id=message.from_user.id,
             text=get_mes("ask_question_9"),
         )
-        await bot.send_message(
-            chat_id=message.from_user.id,
-            text=f"name = {person_data.name}, country = {person_data.country}, city = {person_data.city}, birth_data = {person_data.birth_data}, birth_time = {person_data.birth_time}, question = {person_data.question}, question_2 = {person_data.question_2}, question_status = {person_data.question_status}"
-        )
-        keyboard=Keyboards.pay_keyboard(person_data.question_status)
+        # await bot.send_message(
+        #     chat_id=message.from_user.id,
+        #     text=f"name = {person_data.name}, country = {person_data.country}, city = {person_data.city}, birth_data = {person_data.birth_data}, birth_time = {person_data.birth_time}, question = {person_data.question}, question_2 = {person_data.question_2}, question_status = {person_data.question_status}"
+        # )
+        keyboard = Keyboards.pay_keyboard(person_data.question_status)
         await bot.send_message(
             chat_id=message.from_user.id,
             text=get_mes("ask_question_10", person_data=person_data),
@@ -301,14 +301,14 @@ async def questionnare_setted(message: CallbackQuery, state: FSMContext):
             ai = Claude()
             natal_chart = horo.get_natal_chart(city=person_data.city, name=person_data.name, date=date)
             photo = horo.get_photo(natal_chart=natal_chart)
-            data = horo.get_info_city(city=person_data.city)
+            # data = horo.get_info_city(city=person_data.city)
 
             await bot.send_photo(chat_id=message.from_user.id,
-                                 caption=f"Ваша натальная карта\n{data}",
+                                 caption=f"Ваша натальная карта",
                                  photo=photo)
-            answer = ai.get_answer(question=person_data.question, natal_chart=natal_chart)
-            await bot.send_message(chat_id=message.from_user.id,
-                                   text=answer)
+            # answer = ai.get_answer(question=person_data.question, natal_chart=natal_chart)
+            # await bot.send_message(chat_id=message.from_user.id,
+            #                        text=answer)
     except:
         await bot.send_message(
             chat_id=message.from_user.id,

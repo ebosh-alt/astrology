@@ -132,7 +132,6 @@ class Keyboards:
             "💳1000р 1 день": "ask_question_1000",
         }
     )
-    
 
     rectification_time_buts = {
         "45": "2500",
@@ -152,7 +151,11 @@ class Keyboards:
         if question_status == "free":
             return None
         return Builder.create_keyboard(
-            [f"💳{question_status}р по карте", f"💳{question_status}р PayPal"] 
+            {f"💳{question_status}р Юкасса": f"payment_ykassa_{question_status}",
+             f"💳{question_status}р PayPal": f"payment_paypal_{question_status}",
+             f"💳{question_status}р Stripe": f"payment_stripe_{question_status}",
+             }
+
         )
 
     @staticmethod
@@ -163,5 +166,16 @@ class Keyboards:
             kb_profiles_dict[f"{pr.name} {pr.birth_data}"] = f"questionnare_{pr.id}"
         kb_profiles_dict["Новая анкета"] = "questionnare_new"
         return Builder.create_keyboard(kb_profiles_dict)
-    
+
     questionnare_setted_kb = Builder.create_keyboard(["Продолжить"])
+
+    profile_setted_kb = Builder.create_keyboard({"Продолжить": "complete_profile"})
+
+    @staticmethod
+    async def get_profiles_keyboard(user_id: int):
+        pr_list = await profiles.get_by_user(user_id=user_id)
+        kb_profiles_dict = {}
+        for pr in pr_list:
+            kb_profiles_dict[f"{pr.name} {pr.birth_data}"] = f"profile_{pr.id}"
+        kb_profiles_dict["Новая анкета"] = "profile_new"
+        return Builder.create_keyboard(kb_profiles_dict)

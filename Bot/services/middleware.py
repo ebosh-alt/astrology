@@ -16,9 +16,12 @@ class Logging:
                 else event.message.from_user.first_name
             logging.info(f'{[name, event.message.from_user.id]} - message - {event.message.text}')
         else:
-            name = "@" + event.callback_query.from_user.username if event.callback_query.from_user.username \
-                else event.callback_query.from_user.first_name
-            logging.info(
-                f'{[name, event.callback_query.from_user.id]} - callback_query - {event.callback_query.data}')
+            try:
+                name = "@" + event.callback_query.from_user.username if event.callback_query.from_user.username \
+                    else event.callback_query.from_user.first_name
+                logging.info(
+                    f'{[name, event.callback_query.from_user.id]} - callback_query - {event.callback_query.data}')
+            except Exception as e:
+                logging.error(e)
         result = await handler(event, data)
         return result

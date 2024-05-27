@@ -38,5 +38,11 @@ async def start(message: Message | CallbackQuery, state: FSMContext):
                            parse_mode=None)
 
 
+@router.message(F.text == "🛍 Список пакетов")
+async def list_packets(message: Message):
+    id = message.from_user.id
+    await bot.send_message(chat_id=id,
+                           text=get_mes("list_packets"),
+                           reply_markup=Keyboards.menu_kb)
 
 menu_rt = router
