@@ -9,8 +9,8 @@ from PIL import Image, ImageDraw, ImageFont
 from aiogram.types import FSInputFile
 from geopy.geocoders import Nominatim
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 
 from Bot.entity.NatalChart import ElementNatalChart
 from Bot.entity.models import Date
@@ -21,7 +21,8 @@ logger = logging.getLogger("__name__")
 class VedicGoro:
     def __init__(self):
         self.options = webdriver.FirefoxOptions()
-        self.service = Service("/root/.wdm/drivers/geckodriver/linux64/v0.34.0/geckodriver")
+        self.service = Service("geckodriver")
+
         self.BaseUrl = "https://vedic-horo.ru/analyse.php"
         self.basename = "cities15000"
         self.filename = f"Bot/Data/{self.basename}.zip"
@@ -74,7 +75,9 @@ class VedicGoro:
 
     def create_natal_chart(self, url) -> list[ElementNatalChart]:
         logger.info(f"Request to {url}")
-        html = self.__get_html_natal_chert(url)
+        driver, html = self.__get_html_natal_chert(url)
+        driver.close()
+        driver.quit()
         logger.info(f"Complete request to: {url}")
         natal_chart: list[ElementNatalChart] = []
         for i in html:
@@ -119,12 +122,13 @@ class VedicGoro:
 
     def __get_html_natal_chert(self, url):
         driver = self.__get_driver()
+        logger.info("Getting driver")
+        driver.implicitly_wait(5)
         driver.get(url)
-
-        # time.sleep(2)
+        logger.info("Getting url")
         el = driver.find_element(By.CLASS_NAME, "planets-info")
         logger.info("Received html natal chart")
-        return el.text.split("\n")
+        return driver, el.text.split("\n")
 
     @staticmethod
     def __get_background():
@@ -149,11 +153,12 @@ class VedicGoro:
                             if ct:
                                 city2tz[ct].add(timezone)
         for tzname in city2tz[city]:
-            geolocator = Nominatim(user_agent="amvl;emvl;wvml;wmevl;mevl;m")
-            location = geolocator.geocode(tzname.split("/")[1])
-            lat, lon = float("%.2f" % location.latitude), float("%.2f" % location.longitude)
-            now = datetime.now(pytz.timezone(tzname))
-            return now.strftime("%z").replace("0", ""), lat, lon
+            if "Europe" in tzname:
+                geolocator = Nominatim(user_agent="amvl;emvl;wvml;wmevl;mevl;m")
+                location = geolocator.geocode(tzname.split("/")[1])
+                lat, lon = float("%.2f" % location.latitude), float("%.2f" % location.longitude)
+                now = datetime.now(pytz.timezone(tzname))
+                return now.strftime("%z").replace("0", ""), lat, lon
         return "+3", 55.63, 37.61
 
     def __set_options(self, *args):
@@ -162,8 +167,7 @@ class VedicGoro:
         logger.info("Setting options")
 
     def __get_driver(self):
-        self.__set_options("--headless", '--window-size=1920,1080')
-        logger.info("Getting driver")
+        self.__set_options("--headless", "--disable-gpu")
         return webdriver.Firefox(service=self.service, options=self.options)
 
     async def __screen(self):
@@ -188,3 +192,15 @@ class VedicGoro:
     async def __get_natal_chert(self):
         await self.__screen()
 
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        # filename="log.logging",
+        format=u'%(filename)s:%(lineno)d #%(levelname)-3s [%(asctime)s] - %(message)s',
+        filemode="w",
+        encoding='utf-8')
+    client = VedicGoro()
+    natal_chart = client.get_natal_chart(city="Стерлитамак", name="Артем",
+                                         date=Date(year="1997", month="11", day="22", hour="16", minute="48"))
+    client.get_photo(natal_chart=natal_chart)

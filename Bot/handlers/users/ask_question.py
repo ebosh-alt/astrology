@@ -12,7 +12,8 @@ from Bot.pkg.states import UserStates
 from Bot.services.Claude import Claude
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
-from Bot.services.vedic_goro_linux import VedicGoro
+from Bot.services.times import get_date_response
+from Bot.services.vedic_goro_windows import VedicGoro
 from Database import profiles, Profile
 
 router = Router()
@@ -23,8 +24,10 @@ logger = logging.getLogger(__name__)
 async def ask_question(message: CallbackQuery, state: FSMContext):
     await state.clear()
     await state.set_state(UserStates.choose_question_status)
+    date_1 = get_date_response(1)
+    date_7 = get_date_response(7)
     await bot.send_message(chat_id=message.from_user.id,
-                           text=get_mes("ask_question_text"),
+                           text=get_mes("ask_question_text", date_1=date_1, date_7=date_7),
                            reply_markup=Keyboards.ask_question_kb,
                            parse_mode=None)
 
@@ -212,14 +215,17 @@ async def input_city(message: CallbackQuery, state: FSMContext):
             chat_id=message.from_user.id,
             text=get_mes("ask_question_9"),
         )
-        # await bot.send_message(
-        #     chat_id=message.from_user.id,
-        #     text=f"name = {person_data.name}, country = {person_data.country}, city = {person_data.city}, birth_data = {person_data.birth_data}, birth_time = {person_data.birth_time}, question = {person_data.question}, question_2 = {person_data.question_2}, question_status = {person_data.question_status}"
-        # )
         keyboard = Keyboards.pay_keyboard(person_data.question_status)
+        if person_data.question_status == "free":
+            date_response = None
+        elif person_data.question_status == "590":
+            date_response = get_date_response(7)
+        else:
+            date_response = get_date_response(1)
+
         await bot.send_message(
             chat_id=message.from_user.id,
-            text=get_mes("ask_question_10", person_data=person_data),
+            text=get_mes("ask_question_10", person_data=person_data, date_response=date_response),
             reply_markup=keyboard
         )
         if person_data.question_status == "free":
@@ -276,9 +282,15 @@ async def questionnare_setted(message: CallbackQuery, state: FSMContext):
             text=get_mes("ask_question_9"),
         )
         keyboard = Keyboards.pay_keyboard(person_data.question_status)
+        if person_data.question_status == "free":
+            date_response = None
+        elif person_data.question_status == "590":
+            date_response = get_date_response(7)
+        else:
+            date_response = get_date_response(1)
         await bot.send_message(
             chat_id=message.from_user.id,
-            text=get_mes("ask_question_10", person_data=person_data),
+            text=get_mes("ask_question_10", person_data=person_data, date_response=date_response),
             reply_markup=keyboard
         )
         if person_data.question_status == "free":
@@ -309,5 +321,6 @@ async def questionnare_setted(message: CallbackQuery, state: FSMContext):
     except Exception as er:
         logger.info(er)
     await state.clear()
+
 
 question_rt = router

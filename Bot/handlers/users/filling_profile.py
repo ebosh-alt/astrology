@@ -9,6 +9,7 @@ from Bot.entity.StateModels import PersonData
 from Bot.pkg.states import UserStates
 from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
+from Bot.services.times import get_date_response
 from Database import Profile, profiles
 
 router = Router()
@@ -167,10 +168,12 @@ async def complete_profile(message: CallbackQuery, state: FSMContext):
     id = message.from_user.id
     data: dict = await state.get_data()
     person_data: PersonData = data["profile"]
+
     await bot.send_message(
         chat_id=id,
         text=get_mes("view_profile", name=person_data.name, date=person_data.birth_data, time=person_data.birth_time,
-                     country=person_data.country, city=person_data.city, theme=person_data.thema),
+                     country=person_data.country, city=person_data.city, theme=person_data.thema,
+                     date_response=get_date_response(2)),
         reply_markup=Keyboards.pay_keyboard("790")
     )
 

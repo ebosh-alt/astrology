@@ -115,7 +115,6 @@ class VedicGoro:
     def __get_html_natal_chert(self, url):
         driver = self.__get_driver()
         driver.get(url)
-        time.sleep(2)
         el = driver.find_element(By.CLASS_NAME, "planets-info")
         logger.info("Received html natal chart")
         return el.text.split("\n")
@@ -142,12 +141,13 @@ class VedicGoro:
                             ct = ct.decode('utf-8').strip()
                             if ct:
                                 city2tz[ct].add(timezone)
-        for tzname in city2tz[city]:
-            geolocator = Nominatim(user_agent="amvl;emvl;wvml;wmevl;mevl;m")
-            location = geolocator.geocode(tzname.split("/")[1])
-            lat, lon = float("%.2f" % location.latitude), float("%.2f" % location.longitude)
-            now = datetime.now(pytz.timezone(tzname))
-            return now.strftime("%z").replace("0", ""), lat, lon
+        for tzname in city2tz[city.capitalize()]:
+            if "Europe" in tzname:
+                geolocator = Nominatim(user_agent="amvl;emvl;wvml;wmevl;mevl;m")
+                location = geolocator.geocode(tzname.split("/")[1])
+                lat, lon = float("%.2f" % location.latitude), float("%.2f" % location.longitude)
+                now = datetime.now(pytz.timezone(tzname))
+                return now.strftime("%z").replace("0", ""), lat, lon
         return "+3", 55.63, 37.61
 
     def __set_options(self, *args):
