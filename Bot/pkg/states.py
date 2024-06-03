@@ -45,6 +45,18 @@ class UserStates(StatesGroup):
     input_city = State()
     payment = State()
 
+    enter_new_data = State()
+    questionnaire_choose = State()
+    questionnaire_ = State()
+    questionnaire_edit = State()
+    questionnaire_del = State()
+    q_name = State()
+    q_date = State()
+    q_time = State()
+    q_country = State()
+    q_city = State()
+
+
 
 class AdminStates(StatesGroup):
     ...

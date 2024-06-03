@@ -43,3 +43,7 @@ class MailingData(BaseModel):
     horoscope: bool = True
     video: bool = True
     articles: bool = True
+
+class EProfile(BaseModel):
+    action: str = None
+    profile_id: int = None

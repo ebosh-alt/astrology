@@ -21,7 +21,9 @@ class Profile(Base):
                 "user_id": self.user_id,
                 "name": self.name,
                 "city": self.city,
-                "birth_data": self.birth_data
+                "birth_data": self.birth_data,
+                "birth_time": self.birth_time,
+                "country": self.country
                 }
 
 

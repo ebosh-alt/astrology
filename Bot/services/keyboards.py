@@ -72,7 +72,8 @@ class Keyboards:
                "Зачатие детей": "children_conception",
                "Инвестиции": "investments",
                "Психологическое здоровье": "psyc_health",
-               "Нумерологическая совместимость": "numerological_compatibility"}
+               "Нумерологическая совместимость": "numerological_compatibility",
+               "Анкеты": "questionnaires"}
     menu_kb = Builder.create_keyboard(
         menu_bt,
         1, 1, 1, 1, 1, 1, 3, 2, 1, 1
@@ -179,3 +180,35 @@ class Keyboards:
             kb_profiles_dict[f"{pr.name} {pr.birth_data}"] = f"profile_{pr.id}"
         kb_profiles_dict["Новая анкета"] = "profile_new"
         return Builder.create_keyboard(kb_profiles_dict)
+    
+    @staticmethod
+    async def del_edit_profile_kb(profile_id: int):
+        keyboard = Builder.create_keyboard(
+            {
+                "Изменить": f"edit_pr_{profile_id}",
+                "Удалить": f"del_pr_{profile_id}"
+            }
+        )
+        return keyboard
+    
+    @staticmethod
+    async def del_prof(profile_id: int):
+        keyboard = Builder.create_keyboard( 
+            {
+                "Подтвердить": f"success_del_{profile_id}"
+            }
+        )
+        return keyboard
+    
+    async def edit_prof(profile_id: int):
+        keyboard = Builder.create_keyboard(
+            {
+                "Имя": f"change_name_{profile_id}",
+                "Дата рождения": f"change_data_{profile_id}",
+                "Время рождения": f"change_time_{profile_id}",
+                "Страна": f"change_country_{profile_id}",
+                "Город": f"change_city_{profile_id}",
+                "Назад": f"profile_{profile_id}",
+            }
+        )
+        return keyboard
