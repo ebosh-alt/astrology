@@ -30,17 +30,17 @@ class VedicGoro:
                      "Водолей", "Рыбы"]
         self.coordinates = {
             1: {"sign": (295, 270), "planet": (300, 150)},
-            2: {"sign": (145, 120), "planet": (150, 35)},
-            3: {"sign": (125, 140), "planet": (50, 140)},
-            4: {"sign": (275, 290), "planet": (150, 290)},
-            5: {"sign": (125, 440), "planet": (50, 440)},
-            6: {"sign": (145, 460), "planet": (160, 545)},
+            2: {"sign": (145, 120), "planet": (155, 35)},
+            3: {"sign": (125, 140), "planet": (60, 140)},
+            4: {"sign": (270, 290), "planet": (155, 290)},
+            5: {"sign": (125, 440), "planet": (60, 440)},
+            6: {"sign": (145, 460), "planet": (155, 545)},
             7: {"sign": (295, 310), "planet": (310, 440)},
-            8: {"sign": (445, 460), "planet": (460, 545)},
-            9: {"sign": (465, 440), "planet": (545, 440)},
+            8: {"sign": (445, 460), "planet": (450, 545)},
+            9: {"sign": (465, 440), "planet": (535, 440)},
             10: {"sign": (315, 290), "planet": (460, 290)},
-            11: {"sign": (465, 140), "planet": (545, 140)},
-            12: {"sign": (441.5, 120), "planet": (460, 35)}}
+            11: {"sign": (465, 140), "planet": (535, 140)},
+            12: {"sign": (441.5, 120), "planet": (450, 35)}}
         self.path_font = 'Bot/Data/Sonic.ttf'
         self.planets_eng = {
             "Асцендент": "As",
@@ -132,11 +132,13 @@ class VedicGoro:
 
     @staticmethod
     def __get_background():
-        im = Image.new('RGB', (600, 600), (255, 255, 255))
-        draw = ImageDraw.Draw(im)
-        draw.line(xy=((0, 0), (600, 600)), fill='gray', width=2)
-        draw.line(xy=((0, 600), (600, 0)), fill='gray', width=2)
-        draw.line(xy=((0, 300), (300, 600), (600, 300), (300, 0), (0, 300)), fill='gray', width=2)
+        with Image.open("background.jpg") as im:
+            im.load()
+        # im = Image.new('RGB', (600, 600), (255, 255, 255))
+        # draw = ImageDraw.Draw(im)
+        # draw.line(xy=((0, 0), (600, 600)), fill='gray', width=2)
+        # draw.line(xy=((0, 600), (600, 0)), fill='gray', width=2)
+        # draw.line(xy=((0, 300), (300, 600), (600, 300), (300, 0), (0, 300)), fill='gray', width=2)
         return im
 
     def __get_info_city(self, city: str):

@@ -14,6 +14,8 @@ from Bot.services.GetMessage import get_mes
 from Bot.services.keyboards import Keyboards
 from Bot.services.vedic_goro_linux import VedicGoro
 
+from Database import users, User
+
 # from Database import questionnaires, Questionnaire
 
 router = Router()
@@ -23,6 +25,9 @@ logger = logging.getLogger(__name__)
 @router.message(Command("start"))
 async def start(message: Message | CallbackQuery, state: FSMContext):
     # await state.clear()
+    if not await users.in_(message.from_user.id):
+        user = User(id=message.from_user.id, status_natal=True)
+        await users.new(user)
     id = message.from_user.id
     data = await state.get_data()
     if data.get("mailing") is None:

@@ -150,7 +150,9 @@ class Keyboards:
     @staticmethod
     def pay_keyboard(question_status: str):
         if question_status == "free":
-            return None
+            return Builder.create_keyboard(
+                {"Получить свой ответ": "get_question_natal_chart"}
+            )
         return Builder.create_keyboard(
             {f"💳{question_status}р Юкасса": f"payment_ykassa_{question_status}",
              f"💳{question_status}р PayPal": f"payment_paypal_{question_status}",

@@ -136,29 +136,52 @@ async def q_name(message: Message, state: FSMContext):
 
 @router.message(UserStates.q_date)
 async def q_date(message: Message, state: FSMContext):
-    id = message.from_user.id
-    data = await state.get_data()
-    pr_data: PersonData = data["person_data"]
-    pr_data.birth_data = message.text
-    await state.set_state(UserStates.q_time)
-    await state.update_data(person_data=pr_data)
-    await bot.send_message(
-        chat_id=id,
-        text=get_mes("ask_question_6")
-    )
+    try:
+        id = message.from_user.id
+        data = await state.get_data()
+        pr_data: PersonData = data["person_data"]
+        b_data = message.text.split(".")
+        b_day = int(b_data[0])
+        b_month = int(b_data[1])
+        b_year = int(b_data[2])
+        if b_day<0 or b_day>31 or b_month<0 or b_month>12 or b_year<1900 or b_year>2050:
+            raise ValueError
+        pr_data.birth_data = message.text
+        await state.set_state(UserStates.q_time)
+        await state.update_data(person_data=pr_data)
+        await bot.send_message(
+            chat_id=id,
+            text=get_mes("ask_question_6")
+        )
+    except:
+        await bot.send_message(
+                                chat_id=id,
+                                text=get_mes("ask_question_5")
+                            )
 
 @router.message(UserStates.q_time)
 async def q_time(message: Message, state: FSMContext):
-    id = message.from_user.id
-    data = await state.get_data()
-    pr_data: PersonData = data["person_data"]
-    pr_data.birth_time = message.text
-    await state.set_state(UserStates.q_country)
-    await state.update_data(person_data=pr_data)
-    await bot.send_message(
-        chat_id=id,
-        text=get_mes("ask_question_7")
-    )
+    try:
+        id = message.from_user.id
+        data = await state.get_data()
+        pr_data: PersonData = data["person_data"]
+        b_data = message.text.split(":")
+        b_hours = int(b_data[0])
+        b_minutes = int(b_data[1])
+        if b_hours<0 or b_hours>23 or b_minutes<0 or b_minutes>59:
+            raise ValueError        
+        pr_data.birth_time = message.text
+        await state.set_state(UserStates.q_country)
+        await state.update_data(person_data=pr_data)
+        await bot.send_message(
+            chat_id=id,
+            text=get_mes("ask_question_7")
+        )
+    except:
+        await bot.send_message(
+            chat_id=id,
+            text=get_mes("ask_question_6")
+        )
 
 @router.message(UserStates.q_country)
 async def q_country(message: Message, state: FSMContext):

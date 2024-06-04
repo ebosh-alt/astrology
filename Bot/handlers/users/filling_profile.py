@@ -88,9 +88,11 @@ async def input_date(message: Message, state: FSMContext):
         data: dict = await state.get_data()
         person_data: PersonData = data["person_data"]
         b_data = message.text.split(".")
-        b_day = b_data[0]
-        b_month = b_data[1]
-        b_year = b_data[2].split(" ")[0]
+        b_day = int(b_data[0])
+        b_month = int(b_data[1])
+        b_year = int(b_data[2])
+        if b_day<0 or b_day>31 or b_month<0 or b_month>12 or b_year<1900 or b_year>2050:
+            raise ValueError
         person_data.birth_data = message.text
         await state.set_state(state=UserStates.input_time)
         await state.update_data(person_data=person_data)
@@ -110,8 +112,10 @@ async def input_time(message: Message, state: FSMContext):
         data: dict = await state.get_data()
         person_data: PersonData = data["person_data"]
         b_data = message.text.split(":")
-        b_hours = b_data[0]
-        b_minutes = b_data[1]
+        b_hours = int(b_data[0])
+        b_minutes = int(b_data[1])
+        if b_hours<0 or b_hours>23 or b_minutes<0 or b_minutes>59:
+            raise ValueError   
         person_data.birth_time = message.text
         await state.set_state(state=UserStates.input_country)
         await state.update_data(person_data=person_data)

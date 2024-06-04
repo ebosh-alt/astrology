@@ -9,11 +9,11 @@ class User(Base):
     __tablename__ = "users"
 
     id: int = Column(BigInteger, primary_key=True)
-    username: str = Column(String)
+    status_natal: bool = Column(Boolean)
 
     def dict(self):
         return {"id": self.id,
-                "username": self.username,
+                "status_natal": self.status_natal,
                 }
 
 
