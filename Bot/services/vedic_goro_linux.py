@@ -15,6 +15,10 @@ from selenium.webdriver.chrome.service import Service
 from Bot.entity.NatalChart import ElementNatalChart
 from Bot.entity.models import Date
 
+
+from Bot.Data.config import bot
+import asyncio
+
 logger = logging.getLogger("__name__")
 
 
@@ -30,17 +34,17 @@ class VedicGoro:
                      "Водолей", "Рыбы"]
         self.coordinates = {
             1: {"sign": (295, 270), "planet": (300, 150)},
-            2: {"sign": (145, 120), "planet": (155, 35)},
-            3: {"sign": (125, 140), "planet": (60, 140)},
+            2: {"sign": (160, 130), "planet": (155, 35)},
+            3: {"sign": (135, 155), "planet": (60, 140)},
             4: {"sign": (270, 290), "planet": (155, 290)},
-            5: {"sign": (125, 440), "planet": (60, 440)},
-            6: {"sign": (145, 460), "planet": (155, 545)},
+            5: {"sign": (135, 425), "planet": (60, 440)},
+            6: {"sign": (160, 450), "planet": (155, 545)},
             7: {"sign": (295, 310), "planet": (310, 440)},
-            8: {"sign": (445, 460), "planet": (450, 545)},
-            9: {"sign": (465, 440), "planet": (535, 440)},
+            8: {"sign": (430, 450), "planet": (450, 545)},
+            9: {"sign": (450, 425), "planet": (535, 440)},
             10: {"sign": (315, 290), "planet": (460, 290)},
-            11: {"sign": (465, 140), "planet": (535, 140)},
-            12: {"sign": (441.5, 120), "planet": (450, 35)}}
+            11: {"sign": (450, 155), "planet": (535, 140)},
+            12: {"sign": (430, 130), "planet": (450, 35)}}
         self.path_font = 'Bot/Data/Sonic.ttf'
         self.planets_eng = {
             "Асцендент": "As",
@@ -195,14 +199,25 @@ class VedicGoro:
         await self.__screen()
 
 
-if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        # filename="log.logging",
-        format=u'%(filename)s:%(lineno)d #%(levelname)-3s [%(asctime)s] - %(message)s',
-        filemode="w",
-        encoding='utf-8')
+async def test():
     client = VedicGoro()
     natal_chart = client.get_natal_chart(city="Стерлитамак", name="Артем",
                                          date=Date(year="1997", month="11", day="22", hour="16", minute="48"))
-    client.get_photo(natal_chart=natal_chart)
+    photo = client.get_photo(natal_chart=natal_chart)
+    await bot.send_photo(
+        chat_id=754513655,
+        photo=photo
+    )
+
+if __name__ == "__main__":
+    # logging.basicConfig(
+    #     level=logging.INFO,
+    #     # filename="log.logging",
+    #     format=u'%(filename)s:%(lineno)d #%(levelname)-3s [%(asctime)s] - %(message)s',
+    #     filemode="w",
+    #     encoding='utf-8')
+    # client = VedicGoro()
+    # natal_chart = client.get_natal_chart(city="Стерлитамак", name="Артем",
+    #                                      date=Date(year="1997", month="11", day="22", hour="16", minute="48"))
+    # client.get_photo(natal_chart=natal_chart)
+    asyncio.run(test())
