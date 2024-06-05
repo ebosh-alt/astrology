@@ -45,7 +45,7 @@ class VedicGoro:
             10: {"sign": (315, 290), "planet": (460, 290)},
             11: {"sign": (450, 155), "planet": (535, 140)},
             12: {"sign": (430, 130), "planet": (450, 35)}}
-        self.path_font = 'Bot/Data/Sonic.ttf'
+        self.path_font = 'Bot/Data/CyrillicHelvet Bold.ttf'
         self.planets_eng = {
             "Асцендент": "As",
             "Солнце": "Su",
@@ -106,7 +106,7 @@ class VedicGoro:
         return natal_chart
 
     def __drawing_signs(self, draw: ImageDraw, natal_charts: list[ElementNatalChart]):
-        font = ImageFont.truetype(self.path_font, size=14)
+        font = ImageFont.truetype(self.path_font, size=18)
         id_sign = natal_charts[0].id_sign
         for house in range(1, 13):
             text = ""
