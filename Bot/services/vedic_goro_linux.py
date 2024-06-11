@@ -106,7 +106,7 @@ class VedicGoro:
         return natal_chart
 
     def __drawing_signs(self, draw: ImageDraw, natal_charts: list[ElementNatalChart]):
-        font = ImageFont.truetype(self.path_font, size=18)
+        font = ImageFont.truetype(self.path_font, size=26)
         id_sign = natal_charts[0].id_sign
         for house in range(1, 13):
             text = ""
