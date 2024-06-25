@@ -44,7 +44,6 @@ async def new_profile(message: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.contains("profile_"))
 async def get_profile(message: CallbackQuery, state: FSMContext):
-    id = message.from_user.id
     profile_id = int(message.data.split("profile_")[1])
     profile = await profiles.get(id=int(profile_id))
     logger.info(profile.dict())
@@ -61,12 +60,18 @@ async def get_profile(message: CallbackQuery, state: FSMContext):
 
     # person_data.thema = person_data_old.thema
     await state.update_data(profile=person_data)
+    # await bot.send_message(chat_id=id,
+    #                        text="Анкета выбрана",
+    #                        reply_markup=Keyboards.profile_setted_kb,
+    #                        parse_mode=None)
 
-    await bot.send_message(chat_id=id,
-                           text="Анкета выбрана",
-                           reply_markup=Keyboards.profile_setted_kb,
-                           parse_mode=None)
-
+    await bot.send_message(
+        chat_id=id,
+        text=get_mes("view_profile", name=person_data.name, date=person_data.birth_data, time=person_data.birth_time,
+                     country=person_data.country, city=person_data.city, theme=person_data.thema,
+                     date_response=get_date_response(2)),
+        reply_markup=Keyboards.pay_keyboard("970")
+    )
 
 @router.message(UserStates.input_name)
 async def input_name(message: Message, state: FSMContext):
@@ -111,9 +116,14 @@ async def input_time(message: Message, state: FSMContext):
     try:
         data: dict = await state.get_data()
         person_data: PersonData = data["person_data"]
-        b_data = message.text.split(":")
-        b_hours = int(b_data[0])
-        b_minutes = int(b_data[1])
+        if ":" in message.text: 
+            b_data = message.text.split(":")
+            b_hours = int(b_data[0])
+            b_minutes = int(b_data[1])
+        elif "." in message.text: 
+            b_data = message.text.split(".")
+            b_hours = int(b_data[0])
+            b_minutes = int(b_data[1])
         if b_hours<0 or b_hours>23 or b_minutes<0 or b_minutes>59:
             raise ValueError   
         person_data.birth_time = message.text
@@ -178,7 +188,7 @@ async def complete_profile(message: CallbackQuery, state: FSMContext):
         text=get_mes("view_profile", name=person_data.name, date=person_data.birth_data, time=person_data.birth_time,
                      country=person_data.country, city=person_data.city, theme=person_data.thema,
                      date_response=get_date_response(2)),
-        reply_markup=Keyboards.pay_keyboard("790")
+        reply_markup=Keyboards.pay_keyboard("970")
     )
 
 

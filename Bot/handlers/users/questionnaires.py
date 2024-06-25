@@ -23,7 +23,7 @@ async def questionnaires(message: CallbackQuery, state: FSMContext):
 
     await bot.send_message(chat_id=id,
                            text=get_mes(message.data),
-                           reply_markup=await Keyboards.get_profiles_kb(user_id=id),
+                           reply_markup=await Keyboards.get_profiles_kb(user_id=id, fl=False),
                            parse_mode=None)
 
 
@@ -165,9 +165,14 @@ async def q_time(message: Message, state: FSMContext):
         id = message.from_user.id
         data = await state.get_data()
         pr_data: PersonData = data["person_data"]
-        b_data = message.text.split(":")
-        b_hours = int(b_data[0])
-        b_minutes = int(b_data[1])
+        if ":" in message.text:
+            b_data = message.text.split(":")
+            b_hours = int(b_data[0])
+            b_minutes = int(b_data[1])
+        elif "." in message.text:
+            b_data = message.text.split(".")
+            b_hours = int(b_data[0])
+            b_minutes = int(b_data[1])
         if b_hours<0 or b_hours>23 or b_minutes<0 or b_minutes>59:
             raise ValueError        
         pr_data.birth_time = message.text

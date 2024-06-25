@@ -3,7 +3,7 @@ import logging
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.types import Message, CallbackQuery, FSInputFile, InputFile
 
 from Bot.Data.config import bot
 from Bot.entity.StateModels import PersonData
@@ -65,28 +65,66 @@ async def choose_questionnare(message: CallbackQuery, state: FSMContext):
                                text=get_mes("ask_question_4"),
                                parse_mode=None)
     else:
-        await state.set_state(UserStates.questionnare_setted)
-        pr = await profiles.get(id=int(questionnare_id))
-        logger.info(pr.dict())
-        data: dict = await state.get_data()
-        person_data_old: PersonData = data["person_data"]
-        person_data = PersonData(name=pr.name,
-                                 country=pr.country,
-                                 city=pr.city,
-                                 birth_data=pr.birth_data,
-                                 birth_time=pr.birth_time,
-                                 )
+        try:
+            pr = await profiles.get(id=int(questionnare_id))
+            logger.info(pr.dict())
+            data: dict = await state.get_data()
+            person_data_old: PersonData = data["person_data"]
+            person_data = PersonData(name=pr.name,
+                                     country=pr.country,
+                                     city=pr.city,
+                                     birth_data=pr.birth_data,
+                                     birth_time=pr.birth_time,
+                                     )
 
-        person_data.question_status = person_data_old.question_status
-        person_data.question = person_data_old.question
-        person_data.question_2 = person_data_old.question_2
-        person_data.thema = person_data_old.thema
+            person_data.question_status = person_data_old.question_status
+            person_data.question = person_data_old.question
+            person_data.question_2 = person_data_old.question_2
+            person_data.thema = person_data_old.thema
+            keyboard = Keyboards.pay_keyboard(person_data.question_status)
+            if person_data.question_status == "free":
+                date_response = None
+                fp = "ask_question_search"
+            elif person_data.question_status == "590":
+                date_response = get_date_response(7)
+                fp = "ask_question_9"
+            else:
+                date_response = get_date_response(1)
+                fp = "ask_question_9"
+            await bot.send_message(
+                chat_id=message.from_user.id,
+                text=get_mes(fp),
+            )
+            await bot.send_message(
+                chat_id=message.from_user.id,
+                text=get_mes("ask_question_10", person_data=person_data, date_response=date_response),
+                reply_markup=keyboard
+            )
+        except Exception as er:
+            logger.info(er)
+        await state.set_state(None)
+        # await state.set_state(UserStates.questionnare_setted)
+        # pr = await profiles.get(id=int(questionnare_id))
+        # logger.info(pr.dict())
+        # data: dict = await state.get_data()
+        # person_data_old: PersonData = data["person_data"]
+        # person_data = PersonData(name=pr.name,
+        #                          country=pr.country,
+        #                          city=pr.city,
+        #                          birth_data=pr.birth_data,
+        #                          birth_time=pr.birth_time,
+        #                          )
 
-        await state.update_data(person_data=person_data)
-        await bot.send_message(chat_id=message.from_user.id,
-                               text="Анкета выбрана",
-                               reply_markup=Keyboards.questionnare_setted_kb,
-                               parse_mode=None)
+        # person_data.question_status = person_data_old.question_status
+        # person_data.question = person_data_old.question
+        # person_data.question_2 = person_data_old.question_2
+        # person_data.thema = person_data_old.thema
+
+        # await state.update_data(person_data=person_data)
+        # await bot.send_message(chat_id=message.from_user.id,
+        #                        text="Анкета выбрана",
+        #                        reply_markup=Keyboards.questionnare_setted_kb,
+        #                        parse_mode=None)
         # if question_status == "free":
     # elif question_status == "590":
     # elif question_status == "1000":
@@ -185,9 +223,14 @@ async def input_time(message: CallbackQuery, state: FSMContext):
     try:
         data: dict = await state.get_data()
         person_data: PersonData = data["person_data"]
-        b_data = message.text.split(":")
-        b_hours = int(b_data[0])
-        b_minutes = int(b_data[1])
+        if ":" in message.text:
+            b_data = message.text.split(":")
+            b_hours = int(b_data[0])
+            b_minutes = int(b_data[1])
+        elif "." in message.text:
+            b_data = message.text.split(".")
+            b_hours = int(b_data[0])
+            b_minutes = int(b_data[1])
         if b_hours<0 or b_hours>23 or b_minutes<0 or b_minutes>59:
             raise ValueError   
         person_data.birth_time = message.text
@@ -200,7 +243,7 @@ async def input_time(message: CallbackQuery, state: FSMContext):
     except:
         await bot.send_message(
             chat_id=message.from_user.id,
-            text="Ошибка!\nВведите имя",
+            text="Ошибка!\nВведите время",
         )
 
 
@@ -219,7 +262,7 @@ async def input_country(message: CallbackQuery, state: FSMContext):
     except:
         await bot.send_message(
             chat_id=message.from_user.id,
-            text="Ошибка!\nВведите имя",
+            text="Ошибка!\nВведите страну",
         )
 
 
@@ -327,10 +370,10 @@ async def end_natal_chart(message: CallbackQuery, state: FSMContext):
         user = await users.get(message.from_user.id)
         user.status_natal = False
         await users.update(user)
-        anim = FSInputFile("waiting.mp4")
-        mes = await bot.send_animation(
+        # anim = FSInputFile("waiting.mp4")
+        mes = await bot.send_sticker(
             message.from_user.id,
-            anim
+            sticker="CAACAgIAAxkBAAEMXt1mevz-G7uzIlyaJzwi6jZVYC_XpAACQgEAAs0bMAgEAoCtK287vjUE"
         )
         data: dict = await state.get_data()
         person_data: PersonData = data["person_data"]
@@ -340,8 +383,12 @@ async def end_natal_chart(message: CallbackQuery, state: FSMContext):
             b_month = b_data.split(".")[1]
             b_year = b_data.split(".")[2]
             b_time = person_data.birth_time
-            b_hours = b_time.split(":")[0]
-            b_minutes = b_time.split(":")[1]
+            if ":" in b_time:
+                b_hours = b_time.split(":")[0]
+                b_minutes = b_time.split(":")[1]
+            elif "." in b_time:
+                b_hours = b_time.split(".")[0]
+                b_minutes = b_time.split(".")[1]
             date = Date(year=b_year,
                         month=b_month,
                         day=b_day,

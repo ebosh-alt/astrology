@@ -60,7 +60,7 @@ class Builder:
 
 
 class Keyboards:
-    menu_bt = {"Задать собственный вопрос": "ask_question",
+    menu_bt = {"🎁 Задать бесплатный вопрос": "ask_question",
                "Ректификация (уточнить время рождения)": "rectification",
                "Брак и личная жизнь": "marriage",
                "Финансовая судьба": "financial_fate",
@@ -73,7 +73,7 @@ class Keyboards:
                "Инвестиции": "investments",
                "Психологическое здоровье": "psyc_health",
                "Нумерологическая совместимость": "numerological_compatibility",
-               "Анкеты": "questionnaires"}
+               }
     menu_kb = Builder.create_keyboard(
         menu_bt,
         1, 1, 1, 1, 1, 1, 3, 2, 1, 1
@@ -162,12 +162,15 @@ class Keyboards:
         )
 
     @staticmethod
-    async def get_profiles_kb(user_id: int):
+    async def get_profiles_kb(user_id: int, fl: bool = True):
         pr_list = await profiles.get_by_user(user_id=user_id)
         kb_profiles_dict = {}
         for pr in pr_list:
             kb_profiles_dict[f"{pr.name} {pr.birth_data}"] = f"questionnare_{pr.id}"
         kb_profiles_dict["Новая анкета"] = "questionnare_new"
+        if fl:
+            if len(kb_profiles_dict) > 1:
+                kb_profiles_dict["Редактировать анкеты"] = "questionnaires"
         return Builder.create_keyboard(kb_profiles_dict)
 
     questionnare_setted_kb = Builder.create_keyboard(["Продолжить"])
@@ -181,6 +184,8 @@ class Keyboards:
         for pr in pr_list:
             kb_profiles_dict[f"{pr.name} {pr.birth_data}"] = f"profile_{pr.id}"
         kb_profiles_dict["Новая анкета"] = "profile_new"
+        if len(kb_profiles_dict) > 1:
+            kb_profiles_dict["Редактировать анкеты"] = "questionnaires"
         return Builder.create_keyboard(kb_profiles_dict)
     
     @staticmethod
